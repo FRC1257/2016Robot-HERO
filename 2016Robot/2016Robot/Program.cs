@@ -89,13 +89,11 @@ namespace _2016Robot
 
         public void RunIntakePivot()
         {
-            double left = Controller.GetLeftTriggerAxis();
-            double right = Controller.GetRightTriggerAxis();
-
-            Utilities.Deadband(ref left);
-            Utilities.Deadband(ref right);
-
-            IntakePivot.Set((float) (right - left));
+            double output = 0;
+            if(Controller.GetLeftTrigger()) output -= 0.8;
+            if(Controller.GetRightTrigger()) output += 0.8;
+            
+            IntakePivot.Set(output);
         }
     }
 }
