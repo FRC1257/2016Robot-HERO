@@ -12,24 +12,19 @@ namespace _2016Robot
         public const int STICK_RIGHT_X = 2;
         public const int STICK_RIGHT_Y = 3;
 
-        public const int TRIGGER_LEFT_AXIS = 4;
-        public const int TRIGGER_RIGHT_AXIS = 5;
+        public const int BUTTON_Y = 4;
+        public const int BUTTON_B = 3;
+        public const int BUTTON_A = 2;
+        public const int BUTTON_X = 1;
 
-        public const int BUTTON_Y = 1;
-        public const int BUTTON_B = 2;
-        public const int BUTTON_A = 3;
-        public const int BUTTON_X = 4;
+        public const int TRIGGER_LEFT = 7;
+        public const int TRIGGER_RIGHT = 8;
 
-        public const int TRIGGER_LEFT = 5;
-        public const int TRIGGER_RIGHT = 6;
-
-        public const int BUMPER_LEFT = 7;
-        public const int BUMPER_RIGHT = 8;
+        public const int BUMPER_LEFT = 5;
+        public const int BUMPER_RIGHT = 6;
 
         public const int BUTTON_BACK = 9;
         public const int BUTTON_START = 10;
-        public const int BUTTON_LEFT_STICK = 11;
-        public const int BUTTON_RIGHT_STICK = 12;
 
         public Controller()
         {
@@ -59,16 +54,6 @@ namespace _2016Robot
         public double GetRightStickY()
         {
             return -gamepad.GetAxis(STICK_RIGHT_Y);
-        }
-
-        public double GetLeftTriggerAxis()
-        {
-            return gamepad.GetAxis(TRIGGER_LEFT_AXIS);
-        }
-
-        public double GetRightTriggerAxis()
-        {
-            return gamepad.GetAxis(TRIGGER_RIGHT_AXIS);
         }
 
         public bool GetAButton()
@@ -119,16 +104,6 @@ namespace _2016Robot
         public bool GetStartButton()
         {
             return gamepad.GetButton(BUTTON_START);
-        }
-
-        public bool GetLeftStickButton()
-        {
-            return gamepad.GetButton(BUTTON_LEFT_STICK);
-        }
-
-        public bool GetRightStickButton()
-        {
-            return gamepad.GetButton(BUTTON_RIGHT_STICK);
         }
     }
 }
