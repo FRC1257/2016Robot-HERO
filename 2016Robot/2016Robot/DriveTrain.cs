@@ -30,21 +30,8 @@ namespace _2016Robot
 
             double driveSpeed = 0, turnSpeed = 0;
 
-            if (controller.GetAButton())
-            {
-                driveSpeed = leftY;
-                turnSpeed = leftX;
-            }
-            else if (controller.GetLeftBumper())
-            {
-                driveSpeed = leftY;
-                turnSpeed = rightX;
-            }
-            else if (controller.GetRightBumper())
-            {
-                driveSpeed = rightY;
-                turnSpeed = leftX;
-            }
+            driveSpeed = rightY;
+            turnSpeed = leftX;
 
             ArcadeDrive(driveSpeed, turnSpeed);
         }

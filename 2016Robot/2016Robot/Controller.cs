@@ -12,6 +12,9 @@ namespace _2016Robot
         public const int STICK_RIGHT_X = 2;
         public const int STICK_RIGHT_Y = 3;
 
+        public const int TRIGGER_LEFT_AXIS = 4;
+        public const int TRIGGER_RIGHT_AXIS = 5;
+
         public const int BUTTON_Y = 1;
         public const int BUTTON_B = 2;
         public const int BUTTON_A = 3;
@@ -56,6 +59,16 @@ namespace _2016Robot
         public double GetRightStickY()
         {
             return -gamepad.GetAxis(STICK_RIGHT_Y);
+        }
+
+        public double GetLeftTriggerAxis()
+        {
+            return gamepad.GetAxis(TRIGGER_LEFT_AXIS);
+        }
+
+        public double GetRightTriggerAxis()
+        {
+            return gamepad.GetAxis(TRIGGER_RIGHT_AXIS);
         }
 
         public bool GetAButton()
