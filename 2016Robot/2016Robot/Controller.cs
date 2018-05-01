@@ -76,12 +76,12 @@ namespace _2016Robot
             return gamepad.GetButton(BUTTON_Y);
         }
 
-        public bool GetTriggerLeft()
+        public bool GetLeftTrigger()
         {
             return gamepad.GetButton(TRIGGER_LEFT);
         }
 
-        public bool GetTriggerRight()
+        public bool GetRightTrigger()
         {
             return gamepad.GetButton(TRIGGER_RIGHT);
         }

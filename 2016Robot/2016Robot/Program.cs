@@ -93,7 +93,7 @@ namespace _2016Robot
             if(Controller.GetLeftTrigger()) output -= 0.8;
             if(Controller.GetRightTrigger()) output += 0.8;
             
-            IntakePivot.Set(output);
+            IntakePivot.Set((float) output);
         }
     }
 }
