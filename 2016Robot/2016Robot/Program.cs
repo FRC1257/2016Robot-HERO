@@ -30,6 +30,7 @@ namespace _2016Robot
 
         // Initialize all variables and start the main loop
         // TODO RECHECK FIRMWARE VERSIONS
+        // TODO CURRENT VERSION OF CTRE HERO PHOENIX ON TEAM LAPTOP IS NOT UP TO DATE
         public void Init()
         {
             Controller = new Controller();
