@@ -5,7 +5,7 @@ namespace _2016Robot
 {
     public class Controller
     {
-        CTRE.Gamepad gamepad = null;
+        CTRE.Phoenix.Controller.GameController GameController = null;
 
         public const int STICK_LEFT_X = 0;
         public const int STICK_LEFT_Y = 1;
@@ -28,82 +28,96 @@ namespace _2016Robot
 
         public Controller()
         {
-            gamepad = new CTRE.Gamepad(CTRE.UsbHostDevice.GetInstance());
+            GameController = new CTRE.Phoenix.Controller.GameController(CTRE.Phoenix.UsbHostDevice.GetInstance(0));
+            //CTRE.Phoenix.UsbHostDevice.GetInstance(0).SetSelectableXInputFilter(
+                   //CTRE.Phoenix.UsbHostDevice.SelectableXInputFilter.XInputDevices);
+        }
+
+        public void Output()
+        {
+            Debug.Print("0: " + GameController.GetAxis(0));
+            Debug.Print("1: " + GameController.GetAxis(1));
+            Debug.Print("2: " + GameController.GetAxis(2));
+            Debug.Print("3: " + GameController.GetAxis(3));
+            Debug.Print("4: " + GameController.GetAxis(4));
+            Debug.Print("5: " + GameController.GetAxis(5));
+            Debug.Print("6: " + GameController.GetAxis(6));
+            Debug.Print("7: " + GameController.GetAxis(7));
         }
 
         public bool IsConnected()
         {
-            return gamepad.GetConnectionStatus() == CTRE.UsbDeviceConnection.Connected;
+            return GameController.GetConnectionStatus() == CTRE.Phoenix.UsbDeviceConnection.Connected;
         }
 
         public double GetLeftStickX()
         {
-            return gamepad.GetAxis(STICK_LEFT_X);
+            return Utilities.Deadband(GameController.GetAxis(STICK_LEFT_X));
         }
 
         public double GetLeftStickY()
         {
-            return -gamepad.GetAxis(STICK_LEFT_Y);
+            return Utilities.Deadband(-GameController.GetAxis(STICK_LEFT_Y));
         }
 
         public double GetRightStickX()
         {
-            return gamepad.GetAxis(STICK_RIGHT_X);
+            return Utilities.Deadband(GameController.GetAxis(STICK_RIGHT_X));
         }
 
         public double GetRightStickY()
         {
-            return -gamepad.GetAxis(STICK_RIGHT_Y);
+            return Utilities.Deadband(-GameController.GetAxis(STICK_RIGHT_Y));
         }
 
         public bool GetAButton()
         {
-            return gamepad.GetButton(BUTTON_A);
+            return GameController.GetButton(BUTTON_A);
         }
 
         public bool GetBButton()
         {
-            return gamepad.GetButton(BUTTON_B);
+            return GameController.GetButton(BUTTON_B);
         }
 
         public bool GetXButton()
         {
-            return gamepad.GetButton(BUTTON_X);
+            return GameController.GetButton(BUTTON_X);
         }
 
         public bool GetYButton()
         {
-            return gamepad.GetButton(BUTTON_Y);
+            return GameController.GetButton(BUTTON_Y);
         }
 
         public bool GetLeftTrigger()
         {
-            return gamepad.GetButton(TRIGGER_LEFT);
+            return GameController.GetButton(TRIGGER_LEFT);
         }
 
         public bool GetRightTrigger()
         {
-            return gamepad.GetButton(TRIGGER_RIGHT);
+            return GameController.GetButton(TRIGGER_RIGHT);
         }
 
         public bool GetLeftBumper()
         {
-            return gamepad.GetButton(BUMPER_LEFT);
+            return GameController.GetButton(BUMPER_LEFT);
         }
 
         public bool GetRightBumper()
         {
-            return gamepad.GetButton(BUMPER_RIGHT);
+            return GameController.GetButton(BUMPER_RIGHT);
         }
 
         public bool GetBackButton()
         {
-            return gamepad.GetButton(BUTTON_BACK);
+            return GameController.GetButton(BUTTON_BACK);
         }
 
         public bool GetStartButton()
         {
-            return gamepad.GetButton(BUTTON_START);
+            return GameController.GetButton(BUTTON_START);
         }
     }
 }

@@ -1,25 +1,25 @@
-using System;
 using System.Threading;
 using Microsoft.SPOT;
+
+using CTRE.Phoenix.MotorControl;
+using CTRE.Phoenix.MotorControl.CAN;
+using CTRE.Phoenix.Drive;
 
 namespace _2016Robot
 {
     public class Program
     {
+        TalonSRX FrontLeftMotor = null;
+        TalonSRX FrontRightMotor = null;
+        TalonSRX BackLeftMotor = null;
+        TalonSRX BackRightMotor = null;
+
+        TalonSRX IntakePivot = null;
+        TalonSRX IntakeSpin = null;
+
+        Tank DriveTrain = null;
+
         Controller Controller = null;
-
-        CTRE.TalonSrx FrontLeftMotor = null;
-        CTRE.TalonSrx FrontRightMotor = null;
-        CTRE.PWMSpeedController BackLeftMotor = null;
-        CTRE.PWMSpeedController BackRightMotor = null;
-
-        SpeedControllerGroup LeftMotors = null;
-        SpeedControllerGroup RightMotors = null;
-
-        DriveTrain DriveTrain = null;
-
-        CTRE.PWMSpeedController IntakePivot = null;
-        CTRE.PWMSpeedController IntakeSpin = null;
 
         bool EStopped;
 
@@ -28,45 +28,55 @@ namespace _2016Robot
             new Program().Init();
         }
 
-        //Initialize all variables and start the main loop
+        // Initialize all variables and start the main loop
+        // TODO RECHECK FIRMWARE VERSIONS
         public void Init()
         {
             Controller = new Controller();
 
-            FrontLeftMotor = new CTRE.TalonSrx(1);
-            FrontRightMotor = new CTRE.TalonSrx(2);
-            BackLeftMotor = new CTRE.PWMSpeedController(CTRE.HERO.IO.Port3.PWM_Pin4);
-            BackRightMotor = new CTRE.PWMSpeedController(CTRE.HERO.IO.Port3.PWM_Pin6);
+            FrontLeftMotor = new TalonSRX(1);
+            FrontRightMotor = new TalonSRX(2);
+            BackLeftMotor = new TalonSRX(3);
+            BackRightMotor = new TalonSRX(4);
 
-            LeftMotors = new SpeedControllerGroup(FrontLeftMotor, BackLeftMotor);
-            RightMotors = new SpeedControllerGroup(FrontRightMotor, BackRightMotor);
+            BackLeftMotor.Follow(FrontLeftMotor);
+            BackRightMotor.Follow(FrontRightMotor);
 
-            DriveTrain = new DriveTrain(LeftMotors, RightMotors);
+            //BackRightMotor.SetInverted(true);
 
-            IntakePivot = new CTRE.PWMSpeedController(CTRE.HERO.IO.Port3.PWM_Pin7);
-            IntakeSpin = new CTRE.PWMSpeedController(CTRE.HERO.IO.Port3.PWM_Pin8);
+            DriveTrain = new Tank(FrontLeftMotor, FrontRightMotor, false, false);
+
+            IntakePivot = new TalonSRX(5);
+            IntakeSpin = new TalonSRX(6);
 
             EStopped = false;
 
             Periodic();
         }
-
-        //Update the motors
+        
+        // Update the motors
         public void Periodic()
         {
             while(true)
             {
                 if(Controller.IsConnected() && !EStopped)
                 {
-                    DriveTrain.Drive(Controller);
-                    RunIntakeSpin();
-                    RunIntakePivot();
+                    //DriveTrain.Set(Styles.BasicStyle.PercentOutput, 
+                    //    (float) Controller.GetLeftStickY(), (float) Controller.GetRightStickX());
+                    //RunIntakeSpin();
+                    //RunIntakePivot();
 
-                    if(Controller.GetYButton()) EStopped = true;
+                    FrontRightMotor.Set(ControlMode.PercentOutput, Controller.GetLeftStickY());
+                    //F.Set(ControlMode.PercentOutput, Controller.GetLeftStickY());
 
-                    if(!EStopped) CTRE.Watchdog.Feed();
+                    if (Controller.GetYButton()) EStopped = true;
+                    CTRE.Phoenix.Watchdog.Feed();
                 }
-
+                Controller.Output();
+                if(EStopped)
+                {
+                    Debug.Print("ROBOT ESTOPPED");
+                }
                 Thread.Sleep(20);
             }
         }
@@ -75,15 +85,15 @@ namespace _2016Robot
         {
             if(Controller.GetLeftBumper())
             {
-                IntakeSpin.Set(1);
+                IntakeSpin.Set(ControlMode.PercentOutput, 1);
             }
             else if(Controller.GetRightBumper())
             {
-                IntakeSpin.Set(-1);
+                IntakeSpin.Set(ControlMode.PercentOutput, -1);
             }
             else
             {
-                IntakeSpin.Set(0);
+                IntakeSpin.Set(ControlMode.PercentOutput, 0);
             }
         }
 
@@ -93,7 +103,7 @@ namespace _2016Robot
             if(Controller.GetLeftTrigger()) output -= 0.8;
             if(Controller.GetRightTrigger()) output += 0.8;
             
-            IntakePivot.Set((float) output);
+            IntakePivot.Set(ControlMode.PercentOutput, (float) output);
         }
     }
 }
