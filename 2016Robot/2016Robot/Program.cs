@@ -3,25 +3,25 @@ using Microsoft.SPOT;
 
 using CTRE.Phoenix.MotorControl;
 using CTRE.Phoenix.MotorControl.CAN;
-using CTRE.Phoenix.Drive;
 
 namespace _2016Robot
 {
     public class Program
     {
-        TalonSRX FrontLeftMotor = null;
-        TalonSRX FrontRightMotor = null;
-        TalonSRX BackLeftMotor = null;
-        TalonSRX BackRightMotor = null;
+        TalonSRX frontLeftMotor = null;
+        TalonSRX frontRightMotor = null;
+        TalonSRX backLeftMotor = null;
+        TalonSRX backRightMotor = null;
 
-        TalonSRX IntakePivot = null;
-        TalonSRX IntakeSpin = null;
+        TalonSRX intakePivot = null;
+        TalonSRX intakeRoller = null;
 
-        Tank DriveTrain = null;
+        Tank driveTrain = null;
 
-        Controller Controller = null;
+        Controller controller = null;
 
-        bool EStopped;
+        bool disabled;
+        bool prevButton;
 
         public static void Main()
         {
@@ -33,78 +33,82 @@ namespace _2016Robot
         // TODO CURRENT VERSION OF CTRE HERO PHOENIX ON TEAM LAPTOP IS NOT UP TO DATE
         public void Init()
         {
-            Controller = new Controller();
+            controller = new Controller();
 
-            FrontLeftMotor = new TalonSRX(1);
-            FrontRightMotor = new TalonSRX(2);
-            BackLeftMotor = new TalonSRX(3);
-            BackRightMotor = new TalonSRX(4);
+            frontLeftMotor = new TalonSRX(1);
+            frontRightMotor = new TalonSRX(2);
+            backLeftMotor = new TalonSRX(3);
+            backRightMotor = new TalonSRX(4);
 
-            BackLeftMotor.Follow(FrontLeftMotor);
-            BackRightMotor.Follow(FrontRightMotor);
+            frontLeftMotor.SetNeutralMode(NeutralMode.Brake);
+            frontRightMotor.SetNeutralMode(NeutralMode.Brake);
+            backLeftMotor.SetNeutralMode(NeutralMode.Brake);
+            backRightMotor.SetNeutralMode(NeutralMode.Brake);
 
-            //BackRightMotor.SetInverted(true);
+            backLeftMotor.Follow(frontLeftMotor);
+            backRightMotor.Follow(frontRightMotor);
 
-            DriveTrain = new Tank(FrontLeftMotor, FrontRightMotor, false, false);
+            intakePivot = new TalonSRX(5);
+            intakeRoller = new TalonSRX(6);
 
-            IntakePivot = new TalonSRX(5);
-            IntakeSpin = new TalonSRX(6);
+            disabled = false;
+            prevButton = false;
 
-            EStopped = false;
-
-            Periodic();
+            InitPeriodic();
         }
         
         // Update the motors
-        public void Periodic()
+        public void InitPeriodic()
         {
             while(true)
             {
-                if(Controller.IsConnected() && !EStopped)
+                if(controller.IsConnected() && !disabled)
                 {
-                    //DriveTrain.Set(Styles.BasicStyle.PercentOutput, 
-                    //    (float) Controller.GetLeftStickY(), (float) Controller.GetRightStickX());
-                    //RunIntakeSpin();
-                    //RunIntakePivot();
+                    double forward = limit(controller.GetLeftStickY());
+                    double turn = limit(controller.GetRightStickX());
 
-                    FrontRightMotor.Set(ControlMode.PercentOutput, Controller.GetLeftStickY());
-                    //F.Set(ControlMode.PercentOutput, Controller.GetLeftStickY());
+                    frontRightMotor.Set(ControlMode.PercentOutput, (float) forward,
+                        DemandType.ArbitraryFeedForward, (float) -turn);
+                    frontLeftMotor.Set(ControlMode.PercentOutput, (float) forward,
+                        DemandType.ArbitraryFeedForward, (float) +turn);
 
-                    if (Controller.GetYButton()) EStopped = true;
+                    //IntakeRoller();
+                    //IntakePivot();
+
                     CTRE.Phoenix.Watchdog.Feed();
                 }
-                Controller.Output();
-                if(EStopped)
+                if(!prevButton && controller.GetStartButton())
                 {
-                    Debug.Print("ROBOT ESTOPPED");
+                    disabled = !disabled;
                 }
+                prevButton = controller.GetStartButton();
                 Thread.Sleep(20);
             }
         }
 
-        public void RunIntakeSpin()
+        public void IntakeRoller()
         {
-            if(Controller.GetLeftBumper())
+            if(controller.GetLeftBumper())
             {
-                IntakeSpin.Set(ControlMode.PercentOutput, 1);
+                intakeRoller.Set(ControlMode.PercentOutput, 1);
             }
-            else if(Controller.GetRightBumper())
+            else if(controller.GetRightBumper())
             {
-                IntakeSpin.Set(ControlMode.PercentOutput, -1);
+                intakeRoller.Set(ControlMode.PercentOutput, -1);
             }
             else
             {
-                IntakeSpin.Set(ControlMode.PercentOutput, 0);
+                intakeRoller.Set(ControlMode.PercentOutput, 0);
             }
         }
 
-        public void RunIntakePivot()
+        public void IntakePivot()
         {
             double output = 0;
-            if(Controller.GetLeftTrigger()) output -= 0.8;
-            if(Controller.GetRightTrigger()) output += 0.8;
+            if(controller.GetLeftTrigger()) output -= 0.8;
+            if(controller.GetRightTrigger()) output += 0.8;
             
-            IntakePivot.Set(ControlMode.PercentOutput, (float) output);
+            intakePivot.Set(ControlMode.PercentOutput, (float) output);
         }
     }
 }
