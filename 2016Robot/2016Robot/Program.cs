@@ -1,5 +1,4 @@
 using System.Threading;
-using Microsoft.SPOT;
 
 using CTRE.Phoenix.MotorControl;
 using CTRE.Phoenix.MotorControl.CAN;
@@ -16,8 +15,6 @@ namespace _2016Robot
         TalonSRX intakePivot = null;
         TalonSRX intakeRoller = null;
 
-        Tank driveTrain = null;
-
         Controller controller = null;
 
         bool disabled;
@@ -29,8 +26,6 @@ namespace _2016Robot
         }
 
         // Initialize all variables and start the main loop
-        // TODO RECHECK FIRMWARE VERSIONS
-        // TODO CURRENT VERSION OF CTRE HERO PHOENIX ON TEAM LAPTOP IS NOT UP TO DATE
         public void Init()
         {
             controller = new Controller();
@@ -64,13 +59,13 @@ namespace _2016Robot
             {
                 if(controller.IsConnected() && !disabled)
                 {
-                    double forward = limit(controller.GetLeftStickY());
-                    double turn = limit(controller.GetRightStickX());
+                    double forward = Utilities.Limit(controller.GetLeftStickY());
+                    double turn = Utilities.Limit(controller.GetRightStickX());
 
-                    frontRightMotor.Set(ControlMode.PercentOutput, (float) forward,
-                        DemandType.ArbitraryFeedForward, (float) -turn);
+                    frontRightMotor.Set(ControlMode.PercentOutput, (float) -forward,
+                        DemandType.ArbitraryFeedForward, (float) turn);
                     frontLeftMotor.Set(ControlMode.PercentOutput, (float) forward,
-                        DemandType.ArbitraryFeedForward, (float) +turn);
+                        DemandType.ArbitraryFeedForward, (float) turn);
 
                     //IntakeRoller();
                     //IntakePivot();
@@ -105,8 +100,8 @@ namespace _2016Robot
         public void IntakePivot()
         {
             double output = 0;
-            if(controller.GetLeftTrigger()) output -= 0.8;
-            if(controller.GetRightTrigger()) output += 0.8;
+            //if(controller.GetLeftTrigger()) output -= 0.8;
+            //if(controller.GetRightTrigger()) output += 0.8;
             
             intakePivot.Set(ControlMode.PercentOutput, (float) output);
         }

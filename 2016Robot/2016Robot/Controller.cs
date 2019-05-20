@@ -13,24 +13,27 @@ namespace _2016Robot
         public const int STICK_RIGHT_Y = 3;
 
         public const int BUTTON_Y = 4;
-        public const int BUTTON_B = 3;
-        public const int BUTTON_A = 2;
-        public const int BUTTON_X = 1;
+        public const int BUTTON_B = 2;
+        public const int BUTTON_A = 1;
+        public const int BUTTON_X = 3;
 
-        public const int TRIGGER_LEFT = 7;
-        public const int TRIGGER_RIGHT = 8;
+        public const int TRIGGER_LEFT = 4;
+        public const int TRIGGER_RIGHT = 5;
 
         public const int BUMPER_LEFT = 5;
         public const int BUMPER_RIGHT = 6;
 
-        public const int BUTTON_BACK = 9;
-        public const int BUTTON_START = 10;
+        public const int BUTTON_BACK = 7;
+        public const int BUTTON_START = 8;
+
+        public const int STICK_LEFT = 9;
+        public const int STICK_RIGHT = 10;
 
         public Controller()
         {
             gameController = new CTRE.Phoenix.Controller.GameController(CTRE.Phoenix.UsbHostDevice.GetInstance(0));
-            //CTRE.Phoenix.UsbHostDevice.GetInstance(0).SetSelectableXInputFilter(
-                   //CTRE.Phoenix.UsbHostDevice.SelectableXInputFilter.XInputDevices);
+            CTRE.Phoenix.UsbHostDevice.GetInstance(0).SetSelectableXInputFilter(
+                   CTRE.Phoenix.UsbHostDevice.SelectableXInputFilter.XInputDevices);
         }
 
         public void OutputAxisValues()
@@ -45,6 +48,17 @@ namespace _2016Robot
             Debug.Print("7: " + gameController.GetAxis(7));
         }
 
+        public void PrintActive()
+        {
+            for(int i = 1; i <= 15; i++)
+            {
+                if(gameController.GetButton((uint) i) == true)
+                {
+                    Debug.Print("" + i);
+                }
+            }
+        }
+
         public bool IsConnected()
         {
             return gameController.GetConnectionStatus() == CTRE.Phoenix.UsbDeviceConnection.Connected;
@@ -57,7 +71,7 @@ namespace _2016Robot
 
         public double GetLeftStickY()
         {
-            return Utilities.Deadband(-gameController.GetAxis(STICK_LEFT_Y));
+            return Utilities.Deadband(gameController.GetAxis(STICK_LEFT_Y));
         }
 
         public double GetRightStickX()
@@ -67,7 +81,7 @@ namespace _2016Robot
 
         public double GetRightStickY()
         {
-            return Utilities.Deadband(-gameController.GetAxis(STICK_RIGHT_Y));
+            return Utilities.Deadband(gameController.GetAxis(STICK_RIGHT_Y));
         }
 
         public bool GetAButton()
@@ -90,14 +104,14 @@ namespace _2016Robot
             return gameController.GetButton(BUTTON_Y);
         }
 
-        public bool GetLeftTrigger()
+        public double GetLeftTrigger()
         {
-            return gameController.GetButton(TRIGGER_LEFT);
+            return Utilities.Deadband((gameController.GetAxis(TRIGGER_LEFT) + 1.0) / 2.0);
         }
 
-        public bool GetRightTrigger()
+        public double GetRightTrigger()
         {
-            return gameController.GetButton(TRIGGER_RIGHT);
+            return Utilities.Deadband((gameController.GetAxis(TRIGGER_RIGHT) + 1.0) / 2.0);
         }
 
         public bool GetLeftBumper()
@@ -118,6 +132,16 @@ namespace _2016Robot
         public bool GetStartButton()
         {
             return gameController.GetButton(BUTTON_START);
+        }
+
+        public bool GetLeftStick()
+        {
+            return gameController.GetButton(STICK_LEFT);
+        }
+
+        public bool GetRightStick()
+        {
+            return gameController.GetButton(STICK_RIGHT);
         }
     }
 }
