@@ -7,6 +7,13 @@ namespace _2016Robot
 {
     public class Program
     {
+        float DRIVE_FORWARD_SPEED = 1.0;
+        float DRIVE_TURN_SPEED = 1.0;
+        float INTAKE_SPEED = 1.0;
+        float EJECT_SPEED = -1.0;
+        float CONSTANT_INTAKE_SPEED = 0.0;
+        float PIVOT_SPEED = 1.0;
+
         TalonSRX frontLeftMotor = null;
         TalonSRX frontRightMotor = null;
         TalonSRX backLeftMotor = null;
@@ -59,14 +66,7 @@ namespace _2016Robot
             {
                 if(controller.IsConnected() && !disabled)
                 {
-                    double forward = Utilities.Limit(controller.GetLeftStickY());
-                    double turn = Utilities.Limit(controller.GetRightStickX());
-
-                    frontRightMotor.Set(ControlMode.PercentOutput, (float) -forward,
-                        DemandType.ArbitraryFeedForward, (float) turn);
-                    frontLeftMotor.Set(ControlMode.PercentOutput, (float) forward,
-                        DemandType.ArbitraryFeedForward, (float) turn);
-
+                    Drive();
                     //IntakeRoller();
                     //IntakePivot();
 
@@ -81,29 +81,39 @@ namespace _2016Robot
             }
         }
 
+        public void Drive()
+        {
+            double forward = Utilities.Limit(controller.GetLeftStickY()) * DRIVE_FORWARD_SPEED;
+            double turn = Utilities.Limit(controller.GetRightStickX()) * DRIVE_TURN_SPEED;
+
+            frontRightMotor.Set(ControlMode.PercentOutput, (float) -forward,
+                DemandType.ArbitraryFeedForward, (float) turn);
+            frontLeftMotor.Set(ControlMode.PercentOutput, (float) forward,
+                DemandType.ArbitraryFeedForward, (float) turn);
+        }
+
         public void IntakeRoller()
         {
             if(controller.GetLeftBumper())
             {
-                intakeRoller.Set(ControlMode.PercentOutput, 1);
+                intakeRoller.Set(ControlMode.PercentOutput, INTAKE_SPEED);
             }
             else if(controller.GetRightBumper())
             {
-                intakeRoller.Set(ControlMode.PercentOutput, -1);
+                intakeRoller.Set(ControlMode.PercentOutput, EJECT_SPEED);
             }
             else
             {
-                intakeRoller.Set(ControlMode.PercentOutput, 0);
+                intakeRoller.Set(ControlMode.PercentOutput, CONSTANT_INTAKE_SPEED);
             }
         }
 
         public void IntakePivot()
         {
-            double output = 0;
-            //if(controller.GetLeftTrigger()) output -= 0.8;
-            //if(controller.GetRightTrigger()) output += 0.8;
+            double controllerOutput = Utilities.Limit(controller.GetRightTrigger() - 
+                controller.GetLeftTrigger());
             
-            intakePivot.Set(ControlMode.PercentOutput, (float) output);
+            intakePivot.Set(ControlMode.PercentOutput, (float) controllerOutput * PIVOT_SPEED);
         }
     }
 }
